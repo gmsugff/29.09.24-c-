@@ -1,0 +1,116 @@
+#include <iostream> 
+#include <memory> 
+
+using namespace std;
+
+template <class T>
+class Tree {
+private:
+    struct TreeNode {
+        T data;
+        shared_ptr<TreeNode> left;
+        shared_ptr<TreeNode> right;
+        TreeNode(T data) : data(data), left(nullptr), right(nullptr) {}
+    };
+
+    shared_ptr<TreeNode> root;
+
+public:
+    void insert(T data) {
+        if (!root) {
+            root = make_shared<TreeNode>(data);
+            return;
+        }
+
+        shared_ptr<TreeNode> current = root;
+        while (true) {
+            if (data < current->data) {
+                if (!current->left) {
+                    current->left = make_shared<TreeNode>(data);
+                    return;
+                }
+                current = current->left;
+            }
+            else {
+                if (!current->right) {
+                    current->right = make_shared<TreeNode>(data);
+                    return;
+                }
+                current = current->right;
+            }
+        }
+    }
+
+    void print() {
+        if (root) {
+            print(root);
+        }
+    }
+
+    void print(shared_ptr<TreeNode> node) {
+        if (node) {
+            print(node->left);
+            cout << node->data << " ";
+            print(node->right);
+        }
+    }
+    bool search(T data) {
+        if (!root) {
+            return false;
+        }
+        shared_ptr<Node> current = root;
+        while (current) {
+            if (data < current->data) {
+                current = current->left;
+            }
+            else  if (data > current->data) {
+                current = current->right;
+            }
+            else {
+                return true;
+            }
+            return false;
+        }
+    }
+    int height(shared_ptr<TreeNode> node) {
+        if (!node) {
+            return 0;
+        }
+        return 1 + max(height(node->left), height(node->right));
+    }
+
+    int diameter() {
+        return diameter(root);
+    }
+
+    int diameter(shared_ptr<TreeNode> node) {
+        if (!node) {
+            return 0;
+        }
+        int leftHeight = height(node->left);
+        int rightHeight = height(node->right);
+        int leftDiameter = diameter(node->left);
+        int rightDiameter = diameter(node->right);
+        return max(leftHeight + rightHeight + 1, max(leftDiameter, rightDiameter));
+    }
+};
+
+int main() {
+    Tree<int> terr;
+
+    terr.insert(7);
+    terr.insert(6);
+    terr.insert(5);
+    terr.insert(4);
+    terr.insert(3);
+    terr.insert(2);
+    terr.insert(1);
+    terr.print();
+    bool flag = terr.search(2);
+    cout << endl << flag << " ";
+
+    int diameter = terr.diameter();
+    cout << endl << "Диаметр дерева: " << diameter << endl;
+
+
+}
